@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MyGame.Component.GameObject.Event;
+using MyGame.Core.Component.GameObject.Event;
 
-namespace MyGame.Component.GameObject
+namespace MyGame.Core.Component.GameObject
 {
 	public interface IGameObject {
 		event Action<PositionChangeEventArgs> PositionChange;

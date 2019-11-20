@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
-namespace MyGame.Component.Animation {
+namespace MyGame.Core.Component.Animation {
 	public class AnimationPlan<T> {
 		public Dictionary<T, Animation> Animations { get; set; } = new Dictionary<T, Animation>();
 		public void AddAnimation(Animation animation, T value) {

@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MyGame.Component.GameObject;
+using MyGame.Core.Component.GameObject;
 
-namespace MyGame.Component
+namespace MyGame.Core.Component
 {
 	class TextureGameObject : BaseGameObject {
 		public GraphicsDevice Device { get; }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
-using MyGame.Component.GameObject.Event;
+using MyGame.Core.Component.GameObject.Event;
 
-namespace MyGame.Component.GameObject.Container {
+namespace MyGame.Core.Component.GameObject.Container {
 	public class ContainerItem {
 		internal Container Container { get; }
 		internal IGameObject GameObject { get; }

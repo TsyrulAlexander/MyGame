@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
-namespace MyGame.Component.Animation
+namespace MyGame.Core.Component.Animation
 {
 	public class AnimationManager {
 		protected List<Animation> Animations { get; set; } = new List<Animation>();

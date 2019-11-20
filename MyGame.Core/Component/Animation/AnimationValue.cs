@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace MyGame.Component.Animation
+namespace MyGame.Core.Component.Animation
 {
 	class AnimationValue<T> {
 		public event Action<T> Change;

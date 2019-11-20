@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace MyGame.Scene
+namespace MyGame.Core.Scene
 {
-	class BaseScene: Game
+	public class BaseScene: Game
 	{
 		protected GraphicsDeviceManager Graphics;
 		protected SpriteBatch SpriteBatch;

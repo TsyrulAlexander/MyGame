@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MyGame.Component.GameObject.Event {
+namespace MyGame.Core.Component.GameObject.Event {
 	public class BaseControlEventArgs : EventArgs {
 		public IGameObject GameObject { get; set; }
 	}
