@@ -1,6 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
 
 namespace MyGame.Network.Server {
 	public class ClientItem {
@@ -19,12 +21,8 @@ namespace MyGame.Network.Server {
 			try {
 				Stream = Client.GetStream();
 				while (true) {
-					try {
-						var message = GetMessage(Stream);
-						Server.BroadcastMessage(message, Id);
-					} catch {
-						break;
-					}
+					var message = GetMessage(Stream);
+					Server.BroadcastMessage(message, Id);
 				}
 			} catch (Exception ex) {
 				Console.WriteLine(ex.Message);
@@ -37,10 +35,25 @@ namespace MyGame.Network.Server {
 			Stream?.Close();
 			Client?.Close();
 		}
-		protected virtual object GetMessage(NetworkStream stream) {
-			var formatter = new BinaryFormatter();
-			var obj = formatter.Deserialize(stream);
-			return obj;
+		protected virtual byte[] GetMessage(NetworkStream stream) {
+			var data = new byte[1024];
+			using (var ms = new MemoryStream()) {
+				do {
+					var bytes = Stream.Read(data, 0, data.Length);
+					ms.Write(data, 0, bytes);
+				}
+				while (Stream.DataAvailable);
+				return ms.ToArray();
+			}
+			
+			//var data = new byte[1024];
+			//using (var ms = new MemoryStream()) {
+			//	int numBytesRead;
+			//	while ((numBytesRead = stream.Read(data, 0, data.Length)) > 0) {
+			//		ms.Write(data, 0, numBytesRead);
+			//	}
+			//	return ms.ToArray();
+			//}
 		}
 	}
 }

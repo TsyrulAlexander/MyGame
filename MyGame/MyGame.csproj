@@ -19,4 +19,16 @@
     <ProjectReference Include="..\MyGame.Core\MyGame.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Content\grey_brick\grey_brick_state_1_center_repeating.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\grey_brick\grey_brick_state_1_left_side.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\grey_brick\grey_brick_state_1_right_side.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

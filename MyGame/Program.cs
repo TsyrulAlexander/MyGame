@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 using MyGame.Scene;
 
 namespace MyGame
@@ -7,9 +8,17 @@ namespace MyGame
     {
         [STAThread]
         static void Main() {
-			using (var game = new MainScene()) {
+			var services = ConfigureServices();
+			var serviceProvider = services.BuildServiceProvider();
+			using (var game = serviceProvider.GetService<MainScene>()) {
 				game.Run();
 			}
 		}
-    }
+		private static IServiceCollection ConfigureServices() {
+			IServiceCollection services = new ServiceCollection();
+			services.AddSingleton(services);
+			services.AddSingleton<MainScene>();
+			return services;
+		}
+	}
 }
