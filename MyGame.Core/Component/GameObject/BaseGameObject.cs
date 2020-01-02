@@ -3,16 +3,11 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using MyGame.Core.Annotations;
-using MyGame.Core.Component.GameObject.Event;
-using MyGame.Core.Network.Helper;
-using MyGame.Core.Serialize;
-using MyGame.Network;
 
 namespace MyGame.Core.Component.GameObject {
 	[Serializable]
-	public class BaseGameObject : IGameObject, ISerializable {
+	public abstract class BaseGameObject : IGameObject, ISerializable {
 
 		#region Fields: Private
 
@@ -27,24 +22,14 @@ namespace MyGame.Core.Component.GameObject {
 		private int _zIndex;
 		private float _scale = 1;
 		private bool _isVisible = true;
-		private bool _isSynchronize = true;
+		private bool _enabled = true;
+		private int _drawOrder = 1;
+		private int _updateOrder = 1;
 
 		#endregion
 
 		#region Properties: Public
 		public event PropertyChangedEventHandler PropertyChanged;
-		public event Action<PositionChangeEventArgs> PositionChange;
-		public event Action<SizeChangeEventArgs> SizeChange;
-		public bool IsSynchronize {
-			get => _isSynchronize;
-			set {
-				if (value == _isSynchronize) {
-					return;
-				}
-				_isSynchronize = value;
-				OnPropertyChanged();
-			}
-		}
 		public Guid Id {
 			get => _id;
 			set {
@@ -55,18 +40,18 @@ namespace MyGame.Core.Component.GameObject {
 		public Vector2 Position {
 			get => _position;
 			set {
-				var oldValue = _position;
 				_position = value;
-				OnPositionChange(oldValue, value);
+				CalculatePositionRectangle();
 				OnPropertyChanged();
 			}
 		}
 		public Vector2 Size {
 			get => _size;
 			set {
-				var oldValue = _size;
 				_size = value;
-				OnSizeChange(oldValue, value);
+				CalculateOriginVector();
+				CalculateDestinationRectangle();
+				CalculatePositionRectangle();
 				OnPropertyChanged();
 			}
 		}
@@ -95,29 +80,55 @@ namespace MyGame.Core.Component.GameObject {
 			get => _scale;
 			set {
 				_scale = value;
+				CalculateSize();
 				OnPropertyChanged();
 			}
 		}
-		public bool IsVisible {
+		public bool Visible {
 			get => _isVisible;
 			set {
 				_isVisible = value;
+				VisibleChanged?.Invoke(this, EventArgs.Empty);
 				OnPropertyChanged();
 			}
 		}
-
+		public bool Enabled {
+			get => _enabled;
+			set {
+				_enabled = value;
+				EnabledChanged?.Invoke(this, EventArgs.Empty);
+				OnPropertyChanged();
+			}
+		}
+		public int DrawOrder {
+			get => _drawOrder;
+			set {
+				_drawOrder = value;
+				DrawOrderChanged?.Invoke(this, EventArgs.Empty);
+				OnPropertyChanged();
+			}
+		}
+		public int UpdateOrder {
+			get => _updateOrder;
+			set {
+				_updateOrder = value;
+				UpdateOrderChanged?.Invoke(this, EventArgs.Empty);
+				OnPropertyChanged();
+			}
+		}
+		public event EventHandler<EventArgs> DrawOrderChanged;
+		public event EventHandler<EventArgs> VisibleChanged;
+		
+		public event EventHandler<EventArgs> EnabledChanged;
+		public event EventHandler<EventArgs> UpdateOrderChanged;
 		#endregion
 
 		#region Method: Public
 
-		public virtual void Draw(SpriteBatch spriteBatch, GameTime gameTime) { }
+		public virtual void Draw(GameTime gameTime) { }
 		public virtual void Update(GameTime gameTime) { }
-
+		
 		public void GetObjectData(SerializationInfo info, StreamingContext context) {
-			//info.SetType(typeof(TypeReference));
-			//var type = this.GetType();
-			//info.AddValue("AssemblyName", type.Assembly.FullName);
-			//info.AddValue("FullName", type.FullName);
 			info.AddValue(nameof(_position), _position, _position.GetType());
 			info.AddValue(nameof(_size), _size, _size.GetType());
 			info.AddValue(nameof(_id), _id, typeof(Guid));
@@ -131,7 +142,6 @@ namespace MyGame.Core.Component.GameObject {
 		#endregion
 
 		public BaseGameObject() {
-			
 		}
 
 		public BaseGameObject(SerializationInfo info, StreamingContext context) {
@@ -140,33 +150,29 @@ namespace MyGame.Core.Component.GameObject {
 		}
 
 		#region Method: Protected
-
-		protected virtual void OnPositionChange(Vector2 oldValue, Vector2 newValue) {
-			CalculatePositionRectangle();
-			PositionChange?.Invoke(new PositionChangeEventArgs {
-				GameObject = this,
-				OldValue = oldValue,
-				NewValue = newValue
-			});
-		}
-		protected virtual void OnSizeChange(Vector2 oldValue, Vector2 newValue) {
-			CalculateOriginVector();
-			CalculateDestinationRectangle();
-			CalculatePositionRectangle();
-			SizeChange?.Invoke(new SizeChangeEventArgs {
-				GameObject = this,
-				OldValue = oldValue,
-				NewValue = newValue
-			});
-		}
 		protected virtual void CalculateOriginVector() {
 			Origin = new Vector2(Size.X / 2, Size.Y / 2);
 		}
 		protected virtual void CalculateDestinationRectangle() {
-			SourceRectangle = new Rectangle(Point.Zero, Size.ToPoint());
+			SourceRectangle = new Rectangle(Point.Zero, new Point((int)(Size.X / Scale), (int)(Size.Y / Scale)));
+		}
+		protected virtual void CalculateSize() {
+			Size = new Vector2(Size.X * Scale, Size.Y * Scale);
 		}
 		protected virtual void CalculatePositionRectangle() {
 			PositionRectangle = new Rectangle(Position.ToPoint(), Size.ToPoint());
+		}
+		protected virtual Vector2 GetRotationVector(float? rotation = null) {
+			return new Vector2(GetRotationCos(rotation), GetRotationSin(rotation));
+		}
+		protected virtual float GetRotationCos(float? rotation = null) {
+			return (float) Math.Cos(rotation ?? Rotation);
+		}
+		protected virtual float GetRotationSin(float? rotation = null) {
+			return (float)Math.Sin(rotation ?? Rotation);
+		}
+		protected virtual float GetTotalMilliseconds(GameTime gameTime) {
+			return (float)gameTime.ElapsedGameTime.TotalMilliseconds;
 		}
 		#endregion
 

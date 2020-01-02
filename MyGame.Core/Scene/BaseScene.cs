@@ -1,59 +1,56 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using MyGame.Core.Component;
 using MyGame.Core.Component.GameObject;
 
 namespace MyGame.Core.Scene
 {
-	public class BaseScene: Game {
+	public abstract class BaseScene {
+		protected GraphicsDeviceManager GraphicsDeviceManager { get; set; }
+		public SpriteBatch SpriteBatch { get; private set; }
+		public ContentManager ContentManager { get; set; }
+		public GameWindow GameWindow { get; set; }
 		public event Action<IGameObject> AddItem;
 		public event Action<IGameObject> RemoveItem;
-		private readonly IServiceCollection _service;
-		protected GraphicsDeviceManager Graphics;
-		protected SpriteBatch SpriteBatch;
-		private List<IGameObject> Items { get; }
-		public BaseScene(IServiceCollection service) {
-			_service = service;
-			Items = new List<IGameObject>();
-			Graphics = new GraphicsDeviceManager(this);
-			service.Replace(ServiceDescriptor.Singleton(Graphics));
-			service.Replace(ServiceDescriptor.Singleton(Content));
-			Content.RootDirectory = "Content";
-			IsFixedTimeStep = true;
-			TargetElapsedTime = TimeSpan.FromSeconds(1d / 30d);
-			IsMouseVisible = true;
-		}
+		protected virtual List<IGameObject> Items { get; } = new List<IGameObject>();
 
-		protected override void LoadContent() {
-			SpriteBatch = new SpriteBatch(GraphicsDevice);
-			_service.Replace(ServiceDescriptor.Singleton(SpriteBatch));
+		public virtual void LoadContent(SpriteBatch spriteBatch) {
+			GraphicsDeviceManager = GameServices.GetService<GraphicsDeviceManager>();
+			GameWindow = GameServices.GetService<GameWindow>();
+			ContentManager = new ContentManager(GameServices.Instance);
+			ContentManager.RootDirectory = "Content";
+			GameWindow.AllowUserResizing = true;
+			GameWindow.ClientSizeChanged += GameWindowOnClientSizeChanged;
+			SpriteBatch = spriteBatch;
 		}
-
-		protected override void Update(GameTime gameTime) {
-			if (Keyboard.GetState().IsKeyDown(Keys.Escape)) {
-				Exit();
-			}
-			base.Update(gameTime);
+		public virtual void UnloadContent() {
+			GameWindow.ClientSizeChanged -= GameWindowOnClientSizeChanged;
+			ContentManager.Unload();
+		}
+		protected virtual void GameWindowOnClientSizeChanged(object sender, EventArgs e) { }
+		public virtual void Update(GameTime gameTime) {
 			for (var index = 0; index < Items.Count; index++) {
 				var gameObject = Items[index];
 				gameObject.Update(gameTime);
 			}
 		}
-
-		protected override void Draw(GameTime gameTime) {
-			GraphicsDevice.Clear(Color.CornflowerBlue);
+		protected virtual void BeginDraw(GameTime gameTime) {
 			SpriteBatch.Begin();
-			base.Draw(gameTime);
-			Items.ForEach(gameObject => gameObject.Draw(SpriteBatch, gameTime));
+		}
+		protected virtual void EndDraw(GameTime gameTime) {
 			SpriteBatch.End();
 		}
-
+		public virtual void Draw(GameTime gameTime) {
+			BeginDraw(gameTime);
+			Items.ForEach(gameObject => gameObject.Draw(gameTime));
+			EndDraw(gameTime);
+		}
+		public virtual IEnumerable<IGameObject> GetGameObjects() {
+			return Items;
+		}
 		public virtual void AddGameObject(IGameObject gameObject) {
 			Items.Add(gameObject);
 			OnAddItem(gameObject);

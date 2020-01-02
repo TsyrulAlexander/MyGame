@@ -278,7 +278,7 @@ namespace MyGame.Core.Annotations
   /// </code></item>
   /// <item><code>
   /// [ContractAnnotation("=&gt; true, result: notnull; =&gt; false, result: null")]
-  /// public bool TryParse(string s, out Person result)
+  /// public bool TryParse(string s, out BasePerson result)
   /// </code></item>
   /// </list></examples>
   [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
