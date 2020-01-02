@@ -2,6 +2,7 @@
 using System.Runtime.Serialization;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MyGame.Core.Component.Texture;
 using MyGame.Network.Entities;
@@ -12,7 +13,7 @@ namespace MyGame.Core.Component.GameObject {
 		private MouseState _lastMouseState;
 		private MouseState _currentMouseState;
 		public event Action<EventArgs> Click;
-		public Button(ContentManager contentManager, string textureName) : base(contentManager, textureName) { }
+		public Button(Texture2D texture) : base(texture) { }
 		public Button(SerializationInfo info, StreamingContext context) : base(info, context) {
 
 		}

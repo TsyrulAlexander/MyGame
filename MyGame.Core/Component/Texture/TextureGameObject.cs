@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MyGame.Core.Component.GameObject;
+using MyGame.Core.Scene;
 
 namespace MyGame.Core.Component.Texture
 {
@@ -12,6 +13,7 @@ namespace MyGame.Core.Component.Texture
 	public class TextureGameObject : BaseGameObject {
 		private readonly ContentManager _contentManager;
 		private string _textureName;
+		protected SpriteBatch SpriteBatch { get; } = GameServices.GetService<SpriteBatch>();
 		public string TextureName {
 			get => _textureName;
 			set {
@@ -23,9 +25,9 @@ namespace MyGame.Core.Component.Texture
 		public TextureGameObject(SerializationInfo info, StreamingContext context): base(info, context) {
 			
 		}
-		public TextureGameObject(ContentManager contentManager, string textureName) {
-			_contentManager = contentManager;
+		public TextureGameObject(string textureName) {
 			TextureName = textureName;
+			_contentManager = SceneManager.CurrentScene.ContentManager;
 		}
 		protected override void OnPropertyChanged([CallerMemberName]string propertyName = null) {
 			if (propertyName == nameof(TextureName)) {
@@ -34,12 +36,12 @@ namespace MyGame.Core.Component.Texture
 			}
 			base.OnPropertyChanged(propertyName);
 		}
-		public override void Draw(SpriteBatch spriteBatch, GameTime gameTime) {
-			base.Draw(spriteBatch, gameTime);
-			if (!IsVisible || Texture == null) {
+		public override void Draw( GameTime gameTime) {
+			base.Draw(gameTime);
+			if (!Visible || Texture == null) {
 				return;
 			}
-			spriteBatch.Draw(Texture, Position + Origin, SourceRectangle,
+			SpriteBatch.Draw(Texture, Position + Origin, SourceRectangle,
 				Color, Rotation, Origin, Scale, SpriteEffects.None, ZIndex);
 		}
 	}

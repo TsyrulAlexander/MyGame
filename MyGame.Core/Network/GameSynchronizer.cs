@@ -50,10 +50,10 @@ namespace MyGame.Core.Network
 		}
 		private void SceneOnAddItem(IGameObject gameObject) {
 			gameObject.PropertyChanged += GameObjectOnPropertyChanged;
-			if (!gameObject.IsSynchronize) {
-				return;
-			}
-			clientTcp.Send(new GameObjectNetworkItem("CreateGameObject", gameObject.Id, gameObject));
+			//if (!gameObject.IsSynchronize) {
+			//	return;
+			//}
+			//clientTcp.Send(new GameObjectNetworkItem("CreateGameObject", gameObject.Id, gameObject));
 		}
 		public static SurrogateSelector Selector(BinaryFormatter formatter) {
 			var ss = new SurrogateSelector();
@@ -63,12 +63,12 @@ namespace MyGame.Core.Network
 		}
 		private void GameObjectOnPropertyChanged(object sender, PropertyChangedEventArgs e) {
 			var gameObject = (IGameObject) sender;
-			if (!gameObject.IsSynchronize) {
-				return;
-			}
-			if (e.PropertyName == nameof(gameObject.Position)) {
-				clientTcp.Send(new PositionNetworkItem("SetPosition", gameObject.Id, gameObject.Position));
-			}
+			//if (!gameObject.IsSynchronize) {
+			//	return;
+			//}
+			//if (e.PropertyName == nameof(gameObject.Position)) {
+			//	clientTcp.Send(new PositionNetworkItem("SetPosition", gameObject.Id, gameObject.Position));
+			//}
 		}
 	}
 }
