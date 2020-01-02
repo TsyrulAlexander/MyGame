@@ -1,0 +1,10 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace MyGame.Core.Physics.Collider
+{
+	public interface ICircleCollide: ICollide<CircleCollider>
+	{
+	}
+}
